@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useAuth, useUser } from "@clerk/expo";
 import { Redirect } from "expo-router";
 import { COLORS } from "@/constants/colors";
+import { useTransactions } from "@/hooks/useTransactions";
 
 export default function Home() {
   const { isSignedIn, isLoaded, signOut } = useAuth();
   const { user } = useUser();
+
+  const userId = user?.id;
+  const { transactions, summary, isLoading, loadData, deleteTransaction } = useTransactions(userId);
+
+  useEffect(() => {
+    if (userId) {
+      loadData?.();
+    }
+  }, [userId, loadData]);
+
+  console.log(">>> User ID:", userId);
+  console.log(">>> Transactions:", transactions);
+  console.log(">>> Summary:", summary);
 
   if (!isLoaded) {
     return (
